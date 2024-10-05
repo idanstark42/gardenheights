@@ -5,11 +5,12 @@ export function usePhonePosition () {
   const [orientation, setOrientation] = useState([0, 0, 0])
   const [accelerationInDeviceRF, setAccelerationInDeviceRF] = useState([0, 0, 0])
   const [acceleration, setAcceleration] = useState([0, 0, 0])
-  const [interval, setInterval] = useState(0)
+  const [lastTime, setLastTime] = useState(0)
   const [velocity, setVelocity] = useState([0, 0, 0])
   const [position, setPosition] = useState([0, 0, 0])
 
   useEffect(() => {
+    setLastTime(Date.now())
     const handleOrientation = (event) => {
       const alpha = radians(event.alpha)
       const beta = radians(event.beta)
@@ -20,10 +21,9 @@ export function usePhonePosition () {
 
     const handleMotion = (event) => {
       const { acceleration, interval } = event
-      if (!acceleration || (acceleration.x === 0 && acceleration.y === 0 && acceleration.z === 0)) return
+      if (!acceleration) return
       const { x, y, z } = acceleration
       setAccelerationInDeviceRF([x, y, z])
-      setInterval(interval / 1000)
     }
 
     window.addEventListener('deviceorientation', handleOrientation)
@@ -37,6 +37,10 @@ export function usePhonePosition () {
 
   useEffect(() => {
     const [x, y, z] = accelerationInDeviceRF
+    if (x === 0 && y === 0 && z === 0) {
+      setAcceleration([0, 0, 0])
+      return
+    }
     const [alpha, beta, gamma] = orientation
     const rotationMatrix = getRotationMatrixFromEuler(alpha, beta, gamma)
     const newAcceleration = [
@@ -48,15 +52,18 @@ export function usePhonePosition () {
   }, [accelerationInDeviceRF])
 
   useEffect(() => {
+    const interval = (Date.now() - lastTime) / 1000
     const [ax, ay, az] = acceleration
     const [vx, vy, vz] = velocity
     setVelocity([vx + ax * interval, vy + ay * interval, vz + az * interval])
   }, [acceleration])
 
   useEffect(() => {
+    const interval = (Date.now() - lastTime) / 1000
     const [vx, vy, vz] = velocity
     const [px, py, pz] = position
     setPosition([px + vx * interval, py + vy * interval, pz + vz * interval])
+    setLastTime(Date.now())
   }, [velocity])
 
   return { orientation, acceleration, velocity, position }

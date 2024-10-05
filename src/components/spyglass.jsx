@@ -15,15 +15,15 @@ export default function Spyglass () {
       <br />
       Acceleration:
       <br />
-      {acceleration.map(a => a.toFixed(2)).join(', ')}
+      {acceleration.map(a => a.toFixed(2)).join(', ')} m/s^2
       <br />
       Velocity:
       <br />
-      {velocity.map(v => v.toFixed(2)).join(', ')}
+      {velocity.map(v => v.toFixed(2)).join(', ')} m/s
       <br />
       Position:
       <br />
-      {position.map(p => p.toFixed(2)).join(', ')}
+      {position.map(p => p.toFixed(2)).join(', ')} m
     </div>
   )
 }
