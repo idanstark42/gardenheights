@@ -19,7 +19,13 @@ export function usePhonePosition () {
     const handleMotion = (event) => {
       const { acceleration, interval } = event
       if (!acceleration || (acceleration.x === 0 && acceleration.y === 0 && acceleration.z === 0)) return
-      setAcceleration([acceleration.x, acceleration.y, acceleration.z])
+      const { x, y, z } = acceleration
+      const newAcceleration = [
+        x * Math.cos(beta) * Math.cos(gamma) + y * Math.sin(gamma) - z * Math.sin(beta) * Math.cos(gamma),
+        x * Math.cos(beta) * Math.sin(gamma) - y * Math.cos(gamma) - z * Math.sin(beta) * Math.sin(gamma),
+        x * Math.sin(beta) + z * Math.cos(beta),
+      ]
+      setAcceleration(newAcceleration)
       setInterval(interval / 1000)
     }
 
