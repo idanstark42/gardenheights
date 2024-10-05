@@ -9,8 +9,10 @@ export default function Spyglass () {
   const [lastTimestamp, setLastTimestamp] = useState(0)
   const [velocities, setVelocities] = useState([[0, 0, 0]])
   const [devicePositions, setDevicePositions] = useState([[0, 0, 0]])
+  const [log, setLog] = useState([])
 
   useEffect(() => {
+    setLog((log) => [...log, 'starting'])
     setLastTimestamp(Date.now())
 
     const handleOrientation = (event) => {
@@ -32,9 +34,9 @@ export default function Spyglass () {
       if (!acceleration) return
       const newAcceleration = [acceleration.x, acceleration.y, acceleration.z].map((a) => a || 0)
       const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * dt)
-      setVelocities([newVelocity, ...velocities])
+      setVelocities(velocities => [newVelocity, ...velocities])
       const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * dt)
-      setDevicePositions([newDevicePosition, ...devicePositions])
+      setDevicePositions(positions => [newDevicePosition, ...devicePositions])
     }
 
     window.addEventListener('deviceorientation', handleOrientation)
