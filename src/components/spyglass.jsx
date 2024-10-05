@@ -47,7 +47,7 @@ export default function Spyglass () {
   }, [])
 
   return (
-    <div style={{ position: 'absolute', bottom: 0, right: 0, padding: 10, color: 'white', width: '100%', height: '100%' }}>
+    <div style={{ position: 'absolute', bottom: 0, right: 0, padding: 10, width: '100%', height: '100%' }}>
       Acceleration: {acceleration.map((a) => a.toFixed(2)).join(', ')}
       <br />
       Position: {devicePosition.map((p) => p.toFixed(2)).join(', ')}
