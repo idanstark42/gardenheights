@@ -9,7 +9,5 @@ const TOOLS = {
 }
 
 export default function App() {
-  const [tool, setTool] = useState('spyglass')
-
-  return <tool.Component />
+  return <Spyglass />
 }
