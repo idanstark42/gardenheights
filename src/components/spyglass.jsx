@@ -7,9 +7,8 @@ import CameraFeed from './camera_feed'
 export default function Spyglass () {
   const [orientation, setOrientation] = useState([0, 0, 0])
   const [lastTimestamp, setLastTimestamp] = useState(0)
-  const [acceleration, setAcceleration] = useState([0, 0, 0])
-  const [velocity, setVelocity] = useState([0, 0, 0])
-  const [devicePosition, setDevicePosition] = useState([0, 0, 0])
+  const [velocities, setVelocities] = useState([[0, 0, 0]])
+  const [devicePositions, setDevicePositions] = useState([[0, 0, 0]])
 
   useEffect(() => {
     setLastTimestamp(Date.now())
@@ -25,18 +24,17 @@ export default function Spyglass () {
     const handleMotion = (event) => {
       const newTimestamp = Date.now()
       const dt = (newTimestamp - lastTimestamp) / 1000
-      if (dt < 0.01) return
+      if (dt < 0.1) return
 
       setLastTimestamp(newTimestamp)
 
       const { acceleration } = event
       if (!acceleration) return
       const newAcceleration = [acceleration.x, acceleration.y, acceleration.z].map((a) => a || 0)
-      setAcceleration(newAcceleration)
-      const newVelocity = velocity.map((v, i) => v + newAcceleration[i] * dt)
-      setVelocity(newVelocity)
-      const newDevicePosition = devicePosition.map((p, i) => p + newVelocity[i] * dt)
-      setDevicePosition(newDevicePosition)
+      const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * dt)
+      setVelocities([newVelocity, ...velocities])
+      const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * dt)
+      setDevicePositions([newDevicePosition, ...devicePositions])
     }
 
     window.addEventListener('deviceorientation', handleOrientation)
@@ -50,13 +48,18 @@ export default function Spyglass () {
 
   return (
     <div style={{ position: 'absolute', bottom: 0, right: 0, padding: 10, width: '100%', height: '100%' }}>
-      Acceleration: {acceleration.map((a) => a.toFixed(2)).join(', ')}
-      <br />
-      Velocity: {velocity.map((v) => v.toFixed(2)).join(', ')}
-      <br />
-      Position: {devicePosition.map((p) => p.toFixed(2)).join(', ')}
-      <br />
-      Orientation: {orientation.map((r) => r.toFixed(2)).join(', ')}
+      Velocity:
+      <ul style={{ maxHeight: '20vh', overflowY: 'auto' }}>
+        {velocities.map((v, i) => (
+          <li key={i}>{v.join(', ')}</li>
+        ))}
+      </ul>
+      Position:
+      <ul style={{ maxHeight: '20vh', overflowY: 'auto' }}>
+        {devicePositions.map((p, i) => (
+          <li key={i}>{p.join(', ')}</li>
+        ))}
+      </ul>
     </div>
   )
 }
