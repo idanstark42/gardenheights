@@ -21,14 +21,13 @@ export default function Spyglass () {
     }
 
     const handleMotion = (event) => {
-      setLastDT(event.interval)
-
-      const { acceleration } = event
-      if (!acceleration) return
+      const { acceleration, interval } = event
+      if (!acceleration || (acceleration.x === 0 && acceleration.y === 0 && acceleration.z === 0)) return
+      setLastDT(interval / 1000)
       const newAcceleration = [acceleration.x, acceleration.y, acceleration.z].map((a) => a || 0)
-      const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * (event.interval / 1000))
+      const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * (interval / 1000))
       setVelocities(velocities => [newVelocity, ...velocities])
-      const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * (event.interval / 1000))
+      const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * (interval / 1000))
       setDevicePositions(positions => [newDevicePosition, ...positions])
     }
 
