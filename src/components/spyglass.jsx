@@ -10,10 +10,8 @@ export default function Spyglass () {
   const [acceleration, setAcceleration] = useState([0, 0, 0])
   const [velocity, setVelocity] = useState([0, 0, 0])
   const [devicePosition, setDevicePosition] = useState([0, 0, 0])
-  const [text, setText] = useState('')
 
   useEffect(() => {
-    setText(text + 'starting\n')
     setLastTimestamp(Date.now())
 
     const handleOrientation = (event) => {
@@ -21,7 +19,6 @@ export default function Spyglass () {
       const beta = THREE.MathUtils.degToRad(event.beta)
       const gamma = THREE.MathUtils.degToRad(event.gamma)
 
-      setText(text + `alpha: ${alpha.toFixed(2)}, beta: ${beta.toFixed(2)}, gamma: ${gamma.toFixed(2)}\n`)
       setOrientation([beta, alpha, -gamma])
     }
 
@@ -56,7 +53,6 @@ export default function Spyglass () {
       Position: {devicePosition.map((p) => p.toFixed(2)).join(', ')}
       <br />
       Orientation: {orientation.map((r) => r.toFixed(2)).join(', ')}
-      Text: {text}
     </div>
   )
 }
