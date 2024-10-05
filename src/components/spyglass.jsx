@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 const CameraFeed = ({ videoRef }) => {
   useEffect(() => {
     const getUserMedia = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        const constraints = {
+          video: {
+            facingMode: { exact: 'environment' },
+          },
+        };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
@@ -49,6 +53,7 @@ const ARExperience = () => {
   const videoRef = useRef();
   const [position, setPosition] = useState([0, 0.5, -1]);
   const [rotation, setRotation] = useState([0, 0, 0]);
+  const [acceleration, setAcceleration] = useState([0, 0, 0]);
 
   useEffect(() => {
     const handleOrientation = (event) => {
@@ -60,10 +65,29 @@ const ARExperience = () => {
       setRotation([beta, alpha, -gamma]); // Adjust the rotation order as needed
     };
 
+    const handleMotion = (event) => {
+      const { accelerationIncludingGravity } = event;
+      if (accelerationIncludingGravity) {
+        const x = accelerationIncludingGravity.x || 0;
+        const y = accelerationIncludingGravity.y || 0;
+        const z = accelerationIncludingGravity.z || 0;
+
+        // Update position based on acceleration
+        setAcceleration([x, y, z]);
+        setPosition((prevPosition) => [
+          prevPosition[0] + x * 0.1, // Adjust multiplier for sensitivity
+          prevPosition[1] - y * 0.1, // Invert Y for camera perspective
+          prevPosition[2] + z * 0.1,
+        ]);
+      }
+    };
+
     window.addEventListener('deviceorientation', handleOrientation);
+    window.addEventListener('devicemotion', handleMotion);
 
     return () => {
       window.removeEventListener('deviceorientation', handleOrientation);
+      window.removeEventListener('devicemotion', handleMotion);
     };
   }, []);
 
