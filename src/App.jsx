@@ -1,23 +1,34 @@
-import { useState, useEffect } from 'react'
-import { MapContainer, TileLayer } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
-import './App.css'
+import React, { useRef, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 
+function Box(props) {
+  const meshRef = useRef();
+  const [hovered, setHover] = useState(false);
+  const [clicked, setClick] = useState(false);
 
-export default function App() {
-  const [position, setPosition] = useState([32.07327763966522, 34.80796244196957])
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setPosition([32.07327763966522, 34.80796244196957])
-    })
-  }, [])
+  useFrame(() => (meshRef.current.rotation.x = meshRef.current.rotation.y += 0.01));
 
   return (
-    <MapContainer center={position} zoom={18} style={{ width: '100%', height: '100%' }}>
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
-      />
-    </MapContainer>
-  )
+    <mesh
+      {...props}
+      ref={meshRef}
+      scale={clicked ? 1.5 : 1}
+      onClick={(event) => setClick(!clicked)}
+      onPointerOver={(event) => setHover(true)}
+      onPointerOut={(event) => setHover(false)}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+    </mesh>
+  );
+}
+
+export default function App() {
+  return (
+    <Canvas>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} />
+      <Box position={[-1.2, 0, 0]} />
+      <Box position={[1.2, 0, 0]} />
+    </Canvas>
+  );
 }
