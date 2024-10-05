@@ -36,7 +36,7 @@ export default function Spyglass () {
       const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * dt)
       setVelocities(velocities => [newVelocity, ...velocities])
       const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * dt)
-      setDevicePositions(positions => [newDevicePosition, ...devicePositions])
+      setDevicePositions(positions => [newDevicePosition, ...positions])
     }
 
     window.addEventListener('deviceorientation', handleOrientation)
