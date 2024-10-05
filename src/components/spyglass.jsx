@@ -29,7 +29,7 @@ export default function Spyglass () {
 
       const { acceleration } = event
       if (!acceleration) return
-      const newAcceleration = [acceleration.x, acceleration.y, acceleration.z]
+      const newAcceleration = [acceleration.x, acceleration.y, acceleration.z].map((a) => a || 0)
       setAcceleration(newAcceleration)
       const newVelocity = velocity.map((v, i) => v + newAcceleration[i] * dt)
       setVelocity(newVelocity)
