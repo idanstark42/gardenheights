@@ -1,56 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
 
-const CameraFeed = ({ videoRef }) => {
-  useEffect(() => {
-    const getUserMedia = async () => {
-      try {
-        const constraints = {
-          video: {
-            facingMode: { exact: 'environment' },
-          },
-        }
-        const stream = await navigator.mediaDevices.getUserMedia(constraints)
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-          videoRef.current.play()
-        }
-      } catch (err) {
-        console.error('Error accessing camera:', err)
-      }
-    }
-    getUserMedia()
-  }, [videoRef])
-
-  return (
-    <video
-      ref={videoRef}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        zIndex: -1,
-      }}
-      playsInline
-    />
-  )
-}
-
-const Box = ({ position, rotation }) => {
-  return (
-    <mesh position={position} rotation={rotation}>
-      <boxGeometry args={[0.5, 0.5, 0.5]} />
-      <meshStandardMaterial color="yellow" />
-    </mesh>
-  )
-}
-
-const ARExperience = () => {
-  const videoRef = useRef()
+export default function Spyglass () {
   const [rotation, setRotation] = useState([0, 0, 0])
   const [lastTimestamp, setLastTimestamp] = useState(0)
   const [acceleration, setAcceleration] = useState([0, 0, 0])
@@ -75,9 +27,9 @@ const ARExperience = () => {
       setLastTimestamp(newTimestamp)
       const { acceleration } = event
       if (!acceleration) return
-      acceleration = [acceleration.x, acceleration.y, acceleration.z]
-      setAcceleration(acceleration)
-      const newVelocity = velocity.map((v, i) => v + acceleration[i] * dt)
+      const newAcceleration = [acceleration.x, acceleration.y, acceleration.z]
+      setAcceleration(newAcceleration)
+      const newVelocity = velocity.map((v, i) => v + newAcceleration[i] * dt)
       setVelocity(newVelocity)
       const newDevicePosition = devicePosition.map((p, i) => p + newVelocity[i] * dt)
       setDevicePosition(newDevicePosition)
@@ -94,7 +46,7 @@ const ARExperience = () => {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <CameraFeed videoRef={videoRef} />
+      <CameraFeed />
       <Canvas>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
@@ -110,5 +62,3 @@ const ARExperience = () => {
     </div>
   )
 }
-
-export default ARExperience
