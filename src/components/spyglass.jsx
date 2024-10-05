@@ -51,7 +51,7 @@ export default function Spyglass () {
       Velocity ({velocities.length} samples):
       <ul style={{ maxHeight: '20vh', overflowY: 'auto' }}>
         {velocities.map((v, i) => (
-          <li key={i}>{v.join(', ')}</li>
+          <li key={i} style={{ color: (v[0] === 0 ? 'black' : (v[0] > 0 ? 'green' : 'red')) }}>{v.join(', ')}</li>
         ))}
       </ul>
       Position ({devicePositions.length} samples):
