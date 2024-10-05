@@ -9,7 +9,6 @@ export default function Spyglass () {
   const [lastTimestamp, setLastTimestamp] = useState(0)
   const [velocities, setVelocities] = useState([[0, 0, 0]])
   const [devicePositions, setDevicePositions] = useState([[0, 0, 0]])
-  const [logging, setLogging] = useState(true)
 
   useEffect(() => {
     setLastTimestamp(Date.now())
@@ -31,7 +30,6 @@ export default function Spyglass () {
 
       const { acceleration } = event
       if (!acceleration) return
-      if (!logging) return
       const newAcceleration = [acceleration.x, acceleration.y, acceleration.z].map((a) => a || 0)
       const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * dt)
       setVelocities(velocities => [newVelocity, ...velocities])
@@ -59,10 +57,9 @@ export default function Spyglass () {
       Position ({devicePositions.length} samples):
       <ul style={{ maxHeight: '20vh', overflowY: 'auto' }}>
         {devicePositions.map((p, i) => (
-          <li key={i}>{p.join(', ')}</li>
+          <li key={i} style={{ color: (p[0] === 0 ? 'black' : (p[0] > 0 ? 'green' : 'red')) }}>{p.join(', ')}</li>
         ))}
       </ul>
-      <button onClick={() => setLogging(!logging)}>toggle logging</button>
     </div>
   )
 }
