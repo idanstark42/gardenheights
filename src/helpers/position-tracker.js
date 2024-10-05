@@ -7,10 +7,12 @@ export function usePhonePosition () {
   const [acceleration, setAcceleration] = useState([0, 0, 0])
   const [lastTime, setLastTime] = useState(0)
   const [velocity, setVelocity] = useState([0, 0, 0])
+  const [lastVelocityChange, setLastVelocityChange] = useState(0)
   const [position, setPosition] = useState([0, 0, 0])
 
   useEffect(() => {
     setLastTime(Date.now())
+    setLastVelocityChange(Date.now())
     const handleOrientation = (event) => {
       const alpha = radians(event.alpha)
       const beta = radians(event.beta)
@@ -55,7 +57,14 @@ export function usePhonePosition () {
     const interval = (Date.now() - lastTime) / 1000
     const [ax, ay, az] = acceleration
     const [vx, vy, vz] = velocity
-    setVelocity([vx + ax * interval, vy + ay * interval, vz + az * interval])
+    const newVelocity = [vx + ax * interval, vy + ay * interval, vz + az * interval]
+    if (newVelocity.some((v, i) => v !== velocity[i])) {
+      setLastVelocityChange(Date.now())
+    } else if (Date.now() - lastVelocityChange > 250) {
+      setVelocity([0, 0, 0])
+    } else {
+      setVelocity([vx + ax * interval, vy + ay * interval, vz + az * interval])
+    }
   }, [acceleration])
 
   useEffect(() => {
