@@ -9,6 +9,7 @@ export default function Spyglass () {
   const [lastTimestamp, setLastTimestamp] = useState(0)
   const [velocities, setVelocities] = useState([[0, 0, 0]])
   const [devicePositions, setDevicePositions] = useState([[0, 0, 0]])
+  const [lastDT, setLastDT] = useState(0)
 
   useEffect(() => {
     setLastTimestamp(Date.now())
@@ -27,6 +28,7 @@ export default function Spyglass () {
       if (dt < 0.1) return
 
       setLastTimestamp(newTimestamp)
+      setLastDT(dt)
 
       const { acceleration } = event
       if (!acceleration) return
@@ -60,6 +62,7 @@ export default function Spyglass () {
           <li key={i} style={{ color: (p[0] === 0 ? 'black' : (p[0] > 0 ? 'green' : 'red')) }}>{p[0]}</li>
         ))}
       </ul>
+      delta time: {lastDT}
     </div>
   )
 }
