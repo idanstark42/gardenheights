@@ -9,6 +9,10 @@ export default function Spyglass () {
   const { orientation, acceleration, velocity, position } = usePhonePosition()
   return (
     <div style={{ position: 'absolute', top: 0, right: 0, padding: 10, width: '100%', height: '100%' }}>
+      Acceleration:
+      <br />
+      {acceleration.map(a => a.toFixed(2)).join(', ')}
+      <br />
       Velocity:
       <br />
       {velocity.map(v => v.toFixed(2)).join(', ')}
