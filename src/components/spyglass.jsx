@@ -24,6 +24,7 @@ export default function Spyglass() {
     } catch (err) {
       console.error(err)
       setText('Error entering AR: ' + err.message)
+    }
   }
 
 
