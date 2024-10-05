@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -36,25 +36,36 @@ const CameraFeed = ({ videoRef }) => {
   );
 };
 
-const Box = () => {
-  const meshRef = useRef();
-
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.01; // Rotate the box
-    }
-  });
-
+const Box = ({ position, rotation }) => {
   return (
-    <mesh ref={meshRef} position={[0, 0.5, -1]}>
+    <mesh position={position} rotation={rotation}>
       <boxGeometry args={[0.5, 0.5, 0.5]} />
       <meshStandardMaterial color="yellow" />
     </mesh>
   );
 };
 
-const Spyglass = () => {
+const ARExperience = () => {
   const videoRef = useRef();
+  const [position, setPosition] = useState([0, 0.5, -1]);
+  const [rotation, setRotation] = useState([0, 0, 0]);
+
+  useEffect(() => {
+    const handleOrientation = (event) => {
+      const alpha = THREE.MathUtils.degToRad(event.alpha); // Z-axis rotation
+      const beta = THREE.MathUtils.degToRad(event.beta); // X-axis rotation
+      const gamma = THREE.MathUtils.degToRad(event.gamma); // Y-axis rotation
+
+      // Update rotation based on device orientation
+      setRotation([beta, alpha, -gamma]); // Adjust the rotation order as needed
+    };
+
+    window.addEventListener('deviceorientation', handleOrientation);
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -62,10 +73,10 @@ const Spyglass = () => {
       <Canvas>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
-        <Box />
+        <Box position={position} rotation={rotation} />
       </Canvas>
     </div>
   );
 };
 
-export default Spyglass;
+export default ARExperience;
