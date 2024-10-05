@@ -25,6 +25,8 @@ export default function Spyglass () {
     const handleMotion = (event) => {
       const newTimestamp = Date.now()
       const dt = (newTimestamp - lastTimestamp) / 1000
+      if (dt < 0.01) return
+
       setLastTimestamp(newTimestamp)
 
       const { acceleration } = event
