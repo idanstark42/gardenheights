@@ -99,6 +99,14 @@ const ARExperience = () => {
         <pointLight position={[10, 10, 10]} />
         <Box position={position} rotation={rotation} />
       </Canvas>
+      <div style={{ position: 'absolute', bottom: 0, right: 0, padding: 10, color: 'white' }}>
+        Acceleration: {acceleration.map((a) => a.toFixed(2)).join(', ')}
+        <br />
+        Position: {position.map((p) => p.toFixed(2)).join(', ')}
+        <br />
+        Rotation: {rotation.map((r) => r.toFixed(2)).join(', ')}
+      </div>
+
     </div>
   );
 };
