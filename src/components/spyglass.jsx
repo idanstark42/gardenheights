@@ -6,13 +6,11 @@ import CameraFeed from './camera_feed'
 
 export default function Spyglass () {
   const [orientation, setOrientation] = useState([0, 0, 0])
-  const [lastTimestamp, setLastTimestamp] = useState(0)
   const [velocities, setVelocities] = useState([[0, 0, 0]])
   const [devicePositions, setDevicePositions] = useState([[0, 0, 0]])
   const [lastDT, setLastDT] = useState(0)
 
   useEffect(() => {
-    setLastTimestamp(Date.now())
 
     const handleOrientation = (event) => {
       const alpha = THREE.MathUtils.degToRad(event.alpha)
@@ -23,19 +21,14 @@ export default function Spyglass () {
     }
 
     const handleMotion = (event) => {
-      const newTimestamp = Date.now()
-      const dt = (newTimestamp - lastTimestamp) / 1000
-      if (dt < 0.1) return
-
-      setLastTimestamp(newTimestamp)
-      setLastDT(dt)
+      setLastDT(event.interval)
 
       const { acceleration } = event
       if (!acceleration) return
       const newAcceleration = [acceleration.x, acceleration.y, acceleration.z].map((a) => a || 0)
-      const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * dt)
+      const newVelocity = velocities[0].map((v, i) => v + newAcceleration[i] * event.interval)
       setVelocities(velocities => [newVelocity, ...velocities])
-      const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * dt)
+      const newDevicePosition = devicePositions[0].map((p, i) => p + newVelocity[i] * event.interval)
       setDevicePositions(positions => [newDevicePosition, ...positions])
     }
 
@@ -62,7 +55,6 @@ export default function Spyglass () {
           <li key={i} style={{ color: (p[0] === 0 ? 'black' : (p[0] > 0 ? 'green' : 'red')) }}>{p[0]}</li>
         ))}
       </ul>
-      start time stamp: {lastTimestamp}
       delta time: {lastDT}
     </div>
   )
