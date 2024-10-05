@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { mat4, quat } from 'gl-matrix'
 
-const MAX_TIME_WITHOUT_ACCELERATION = 100
+const MIN_VELOCITY = 0.01
+const VELOCITY_REDUCTION = 0.5
 
 export function usePhonePosition () {
   const [orientation, setOrientation] = useState([0, 0, 0])
@@ -57,9 +58,12 @@ export function usePhonePosition () {
 
   useEffect(() => {
     if (acceleration.every(a => a === 0)) {
-      if (Date.now() - lastVelocityChange > MAX_TIME_WITHOUT_ACCELERATION) {
+      const newVelocity = velocity.map(v => v * VELOCITY_REDUCTION)
+      if (velocity.every((v, i) => Math.abs(v) < MIN_VELOCITY)) {
         setVelocity([0, 0, 0])
         setLastVelocityChange(Date.now())
+      } else {
+        setVelocity(newVelocity)
       }
       return
     }
