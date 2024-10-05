@@ -62,6 +62,7 @@ export default function Spyglass () {
           <li key={i} style={{ color: (p[0] === 0 ? 'black' : (p[0] > 0 ? 'green' : 'red')) }}>{p[0]}</li>
         ))}
       </ul>
+      start time stamp: {lastTimestamp}
       delta time: {lastDT}
     </div>
   )
