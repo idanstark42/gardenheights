@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
 
+import CameraFeed from './camera_feed'
+
 export default function Spyglass () {
   const [rotation, setRotation] = useState([0, 0, 0])
   const [lastTimestamp, setLastTimestamp] = useState(0)
